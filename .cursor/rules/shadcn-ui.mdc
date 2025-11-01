@@ -1,0 +1,241 @@
+---
+alwaysApply: true
+---
+
+# GDGFlashCard Project - Cursor Rules
+
+## Project Overview
+This is a Next.js 16 application with TypeScript, React 19, and Tailwind CSS v4 for building a flashcard system for GDG (Google Developer Groups).
+
+## Tech Stack
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript (strict mode)
+- **UI Library**: React 19
+- **Styling**: Tailwind CSS v4
+- **UI Components**: shadcn/ui
+- **Icons**: Lucide React
+- **Utilities**: clsx, tailwind-merge, class-variance-authority
+
+## shadcn/ui Setup & Usage
+
+### Initialization
+If shadcn/ui is not initialized in the project, use:
+```bash
+npx shadcn@latest init
+```
+
+### Adding Components
+To install a specific shadcn/ui component (e.g., button):
+```bash
+npx shadcn@latest add button
+```
+
+### UI Component Guidelines
+- **ALWAYS** use shadcn/ui components for all UI elements
+- Before creating custom components, check if shadcn/ui has an equivalent
+- Common components to use:
+  - `button` - for all button elements
+  - `card` - for card layouts
+  - `input` - for form inputs
+  - `label` - for form labels
+  - `dialog` - for modals/dialogs
+  - `dropdown-menu` - for dropdown menus
+  - `toast` - for notifications
+  - `form` - for forms with validation
+  - `table` - for data tables
+  - `tabs` - for tabbed interfaces
+  - `badge` - for status indicators
+
+## Code Style & Conventions
+
+### TypeScript
+- Use TypeScript for all files
+- Prefer interfaces over types for object shapes
+- Use proper type annotations, avoid `any`
+- Leverage strict mode features
+- Use type inference where appropriate
+
+### React & Next.js
+- Use React Server Components (RSC) by default
+- Add `"use client"` directive only when necessary (hooks, event handlers, browser APIs)
+- Use Next.js App Router conventions (`page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`)
+- Implement proper loading and error states
+- Use Next.js Image component for images
+- Use Next.js Link component for navigation
+
+### File Structure
+- Place React components in `src/components/`
+- Place UI components (shadcn) in `src/components/ui/`
+- Use path alias `@/` for imports (e.g., `@/components/ui/button`)
+- Place app routes in `src/app/`
+- Use kebab-case for file and folder names
+- Use PascalCase for component names
+
+### Component Structure
+```tsx
+// Server Component (default)
+import { ComponentProps } from "@/types"
+
+export default function MyComponent({ prop1, prop2 }: ComponentProps) {
+  return (
+    <div className="...">
+      {/* JSX */}
+    </div>
+  )
+}
+
+// Client Component
+"use client"
+
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+
+export function MyClientComponent() {
+  const [state, setState] = useState()
+  
+  return (
+    <Button onClick={() => setState(...)}>
+      Click me
+    </Button>
+  )
+}
+```
+
+### Styling
+- Use Tailwind CSS utility classes
+- Use `cn()` helper from `@/lib/utils` for conditional classes:
+  ```tsx
+  import { cn } from "@/lib/utils"
+  
+  <div className={cn("base-classes", condition && "conditional-classes")} />
+  ```
+- Follow mobile-first responsive design
+- Use Tailwind's responsive prefixes (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`)
+- Prefer Tailwind utilities over custom CSS
+
+### Forms & Validation
+- Use shadcn/ui `form` component with react-hook-form
+- Implement proper validation with Zod schemas
+- Show clear error messages
+- Handle loading and submission states
+
+### Accessibility
+- Use semantic HTML elements
+- Add proper ARIA labels and attributes
+- Ensure keyboard navigation works
+- Test with screen readers
+- Maintain proper color contrast
+- Add focus states to interactive elements
+
+### Performance
+- Optimize images with Next.js Image component
+- Use dynamic imports for large components
+- Implement proper loading states
+- Minimize client-side JavaScript
+- Use React Server Components where possible
+- Implement proper caching strategies
+
+### Error Handling
+- Use Next.js error boundaries (`error.tsx`)
+- Implement try-catch blocks for async operations
+- Show user-friendly error messages
+- Log errors appropriately
+- Handle loading states gracefully
+
+## Code Quality
+
+### Best Practices
+- Write clean, readable code
+- Use descriptive variable and function names
+- Keep components small and focused (Single Responsibility Principle)
+- Extract reusable logic into custom hooks
+- Comment complex logic
+- Avoid deep nesting
+- Use early returns to reduce complexity
+
+### Testing Considerations
+- Write testable code
+- Keep business logic separate from UI components
+- Use pure functions where possible
+- Avoid side effects in render methods
+
+### Git & Documentation
+- Write clear commit messages
+- Document complex functionality
+- Keep README.md updated
+- Document API endpoints and data models
+
+## Common Patterns
+
+### Data Fetching (Server Components)
+```tsx
+async function getData() {
+  const res = await fetch('...')
+  if (!res.ok) throw new Error('Failed to fetch')
+  return res.json()
+}
+
+export default async function Page() {
+  const data = await getData()
+  return <div>{/* Use data */}</div>
+}
+```
+
+### Client-Side State Management
+```tsx
+"use client"
+
+import { useState, useEffect } from "react"
+
+export function ClientComponent() {
+  const [data, setData] = useState()
+  
+  useEffect(() => {
+    // Client-side effects
+  }, [])
+  
+  return <div>{/* JSX */}</div>
+}
+```
+
+### Layout Pattern
+```tsx
+// app/layout.tsx
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+## Environment & Configuration
+- Use `.env.local` for local environment variables
+- Prefix public env vars with `NEXT_PUBLIC_`
+- Never commit sensitive data
+- Document required environment variables
+
+## Icons
+- Use Lucide React for all icons
+- Import icons individually: `import { IconName } from "lucide-react"`
+- Keep icon sizes consistent
+- Use appropriate ARIA labels for icon-only buttons
+
+## Important Notes
+- Always check documentation before implementing new features
+- Follow Next.js 16 and React 19 best practices
+- Prioritize user experience and accessibility
+- Keep dependencies up to date
+- Use shadcn/ui as the primary UI component library
+- Maintain consistency across the application
+
+## Resources
+- [Next.js Documentation](https://nextjs.org/docs)
+- [shadcn/ui Documentation](https://ui.shadcn.com)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [Lucide Icons](https://lucide.dev)
