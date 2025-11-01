@@ -19,22 +19,22 @@ npm install
 
 ### 2️⃣ Set Up Environment Variables
 
-Create `.env.local` file:
+Copy the example file and add your credentials:
 
 ```bash
-# Clerk Authentication
-# Get from: https://dashboard.clerk.com/last-active?path=api-keys
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_your_key_here"
-CLERK_SECRET_KEY="sk_test_your_key_here"
+# Copy the template
+cp .env.example .env.local
 
-# Database (we'll set this up later)
-DATABASE_URL="postgresql://user:pass@host:5432/db"
+# Edit .env.local with your actual values
 ```
 
 **Get your Clerk keys:**
 1. Visit [Clerk Dashboard](https://dashboard.clerk.com)
 2. Create/select your application
 3. Go to "API Keys" and copy both keys
+4. Paste them into your `.env.local` file
+
+> ⚠️ **Never commit `.env.local` to Git!** Only `.env.example` should be committed.
 
 > 💡 See [docs/environment-setup.md](./docs/environment-setup.md) for detailed configuration
 

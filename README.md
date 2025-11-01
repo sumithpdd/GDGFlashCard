@@ -54,17 +54,25 @@ This is a full-stack application with:
 npm install
 ```
 
-2. Set up environment variables in `.env.local`:
+2. Set up environment variables:
 ```bash
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key
-CLERK_SECRET_KEY=your_secret_key
+# Copy the example file
+cp .env.example .env.local
 
-# Database
-DATABASE_URL=secret
+# Edit .env.local with your actual credentials
 ```
 
-Get your Clerk keys from [https://dashboard.clerk.com/last-active?path=api-keys](https://dashboard.clerk.com/last-active?path=api-keys)
+Your `.env.local` should look like:
+```bash
+# Clerk Authentication (get from https://dashboard.clerk.com/last-active?path=api-keys)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_actual_publishable_key_here
+CLERK_SECRET_KEY=sk_test_your_actual_secret_key_here
+
+# Database (get from https://neon.tech)
+DATABASE_URL=postgresql://user:password@host:5432/database?sslmode=require
+```
+
+> ⚠️ **Important**: Never commit `.env.local` to version control! Replace the placeholder values above with your actual credentials.
 
 3. Run the development server:
 ```bash
@@ -184,19 +192,25 @@ GDGFlashCard/
 ├── docs/                       # Documentation
 ├── drizzle/                    # Database migrations (generated)
 ├── drizzle.config.ts           # Drizzle Kit configuration
-├── .env.local                  # Environment variables (not committed)
+├── .env.example                # Environment variables template (committed)
+├── .env.local                  # Your actual environment variables (NOT committed)
 ├── package.json                # Dependencies and scripts
+├── SECURITY.md                 # Security policy and best practices
 └── README.md                   # This file
 ```
 
-## Security Considerations
+## Security
 
-This application implements the following security measures:
+This application implements comprehensive security measures:
 
-- **Authentication Required**: Only logged-in users can access the application
-- **Data Isolation**: Users can only access their own flashcards
-- **Server-Side Validation**: All data operations are validated on the server
-- **Secure Database Access**: Database credentials are stored in environment variables
+- **Authentication**: Clerk-powered user authentication with session management
+- **Authorization**: User-level data isolation - users can only access their own data
+- **Input Validation**: All inputs validated with Zod schemas on the server
+- **SQL Injection Prevention**: Drizzle ORM parameterizes all queries
+- **Secret Management**: All credentials stored in environment variables (never in code)
+- **Server-Side Operations**: Sensitive operations never exposed to client
+
+For detailed security information, see [SECURITY.md](./SECURITY.md)
 
 ## Documentation
 
@@ -205,6 +219,10 @@ For more detailed information, see the [docs](./docs) folder:
 - [Architecture](./docs/architecture.md) - Detailed system architecture
 - [Database Schema](./docs/database.md) - Database structure and models
 - [Authentication](./docs/authentication.md) - Authentication implementation
+- [Environment Setup](./docs/environment-setup.md) - Configure environment variables
+- [Drizzle Setup](./docs/drizzle-setup.md) - Database ORM setup guide
+- [Security Policy](./SECURITY.md) - Security practices and vulnerability reporting
+- [Quick Start](./QUICKSTART.md) - Get up and running in 5 minutes
 - [Font Verification](./FONT_VERIFICATION.md) - Complete font configuration audit
 - [CHANGELOG](./CHANGELOG.md) - Project change history and version tracking
 
