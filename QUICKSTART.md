@@ -22,15 +22,19 @@ npm install
 Create `.env.local` file:
 
 ```bash
+# Clerk Authentication
+# Get from: https://dashboard.clerk.com/last-active?path=api-keys
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_your_key_here"
+CLERK_SECRET_KEY="sk_test_your_key_here"
+
 # Database (we'll set this up later)
 DATABASE_URL="postgresql://user:pass@host:5432/db"
-
-# Auth Secret (generate with: openssl rand -base64 32)
-NEXTAUTH_SECRET="your-secret-here"
-
-# App URL
-NEXTAUTH_URL="http://localhost:3000"
 ```
+
+**Get your Clerk keys:**
+1. Visit [Clerk Dashboard](https://dashboard.clerk.com)
+2. Create/select your application
+3. Go to "API Keys" and copy both keys
 
 > 💡 See [docs/environment-setup.md](./docs/environment-setup.md) for detailed configuration
 
@@ -44,39 +48,61 @@ Open [http://localhost:3000](http://localhost:3000) 🎉
 
 ## What's Next?
 
+### ✅ Already Complete
+- Authentication with Clerk (sign up/sign in working!)
+- Landing page with auth UI
+- Dark theme enabled
+
 ### Phase 1: Database Setup
 1. Create Neon account → [neon.tech](https://neon.tech)
 2. Follow [docs/drizzle-setup.md](./docs/drizzle-setup.md)
 3. Run migrations
 
-### Phase 2: Authentication
-1. Follow [docs/authentication.md](./docs/authentication.md)
-2. Create login/signup pages
-3. Protect routes
+### Phase 2: Customize Authentication (Optional)
+1. Check [docs/authentication.md](./docs/authentication.md) to:
+   - Customize Clerk themes
+   - Add OAuth providers (Google, GitHub, etc.)
+   - Create custom sign-in pages
+   - Learn about protecting routes
 
 ### Phase 3: Build Features
-1. Create flashcard CRUD
+1. Create flashcard CRUD operations
 2. Implement deck management
-3. Build study mode
+3. Build study mode with spaced repetition
 
 ## Project Structure
 
 ```
 GDGFlashCard/
-├── src/app/          # Pages & routes
-├── docs/             # Documentation
-├── public/           # Static files
-└── package.json      # Dependencies
+├── src/
+│   ├── app/              # Pages & routes
+│   ├── components/ui/    # shadcn/ui components
+│   ├── lib/              # Utilities
+│   └── middleware.ts     # Clerk auth middleware
+├── docs/                 # Documentation
+├── public/               # Static files
+└── package.json          # Dependencies
 ```
 
 ## Key Commands
 
+### Development
 ```bash
 npm run dev          # Start dev server
 npm run build        # Build for production
 npm run start        # Run production build
 npm run lint         # Check code quality
 ```
+
+### Database
+```bash
+npm run db:push      # Quick sync schema (dev only)
+npm run db:generate  # Generate migration files
+npm run db:migrate   # Apply migrations to database
+npm run db:studio    # Open database GUI
+```
+
+> 💡 **Quick Tip:** After modifying your schema in `src/db/schema.ts`, run `npm run db:push` during development to instantly update your database!
 
 ## Need Help?
 
@@ -86,7 +112,9 @@ npm run lint         # Check code quality
 
 ## Quick Links
 
+- [Clerk Docs](https://clerk.com/docs)
 - [Next.js Docs](https://nextjs.org/docs)
+- [shadcn/ui Docs](https://ui.shadcn.com)
 - [Drizzle Docs](https://orm.drizzle.team)
 - [Tailwind CSS](https://tailwindcss.com)
 - [TypeScript Docs](https://www.typescriptlang.org)

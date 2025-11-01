@@ -206,35 +206,164 @@ DATABASE_URL="postgresql://username:password@hostname/database?sslmode=require"
 
 **Important:** Add `?sslmode=require` at the end for security.
 
-## Running Migrations
+## Updating Your Database Schema
 
-### Generate Migration
+There are two main approaches to sync your Drizzle schema with your Neon database:
 
-When you change your schema:
+### Option 1: Quick Push (Development/Prototyping)
 
-```bash
-npm run db:generate
-```
-
-This creates a SQL migration file in the `drizzle/` folder.
-
-### Apply Migration
-
-To apply migrations to your database:
-
-```bash
-npm run db:migrate
-```
-
-### Push Schema (Development)
-
-For quick prototyping, push schema directly:
+**Best for:** Development, quick iterations, prototyping
 
 ```bash
 npm run db:push
 ```
 
-**Warning:** This bypasses migrations. Use only in development!
+**What it does:**
+- Directly syncs your schema to the database
+- No migration files created
+- Fastest way to update during development
+- Detects and applies schema changes automatically
+
+**⚠️ Warning:** This bypasses migration history. Use only in development!
+
+**Use when:**
+- Working locally and iterating quickly
+- Testing schema changes
+- You don't need migration history
+- Prototyping new features
+
+---
+
+### Option 2: Generate & Migrate (Production/Team Projects)
+
+**Best for:** Production, team collaboration, version control
+
+**Step 1: Generate Migration Files**
+
+```bash
+npm run db:generate
+```
+
+**What it does:**
+- Compares your schema with the current database state
+- Creates timestamped SQL migration files in `drizzle/` folder
+- Preserves migration history for version control
+
+**Step 2: Review the Migration** (Important!)
+
+Check the generated SQL file in the `drizzle/` folder:
+```sql
+-- Example: drizzle/0000_bright_avengers.sql
+CREATE TABLE "decks" (
+  "id" serial PRIMARY KEY,
+  "user_id" text NOT NULL,
+  "title" text NOT NULL,
+  ...
+);
+```
+
+**Step 3: Apply Migration to Database**
+
+```bash
+npm run db:migrate
+```
+
+**What it does:**
+- Executes the SQL migration files
+- Updates your Neon database schema
+- Tracks which migrations have been applied
+
+**Use when:**
+- Deploying to production
+- Working in a team
+- Need to rollback changes
+- Want migration history in Git
+
+---
+
+### Which Method Should I Use?
+
+| Scenario | Method | Command |
+|----------|--------|---------|
+| Local development & testing | Push | `npm run db:push` |
+| First-time schema setup | Push or Generate+Migrate | Either works |
+| Production deployment | Generate+Migrate | `npm run db:generate` then `npm run db:migrate` |
+| Team collaboration | Generate+Migrate | Commit migrations to Git |
+| Schema experimentation | Push | Fast iterations |
+| Need to rollback changes | Generate+Migrate | Version control |
+
+---
+
+### Common Workflow Examples
+
+#### Scenario 1: Adding a New Field
+
+You add a new field to your schema:
+
+```typescript
+// src/db/schema.ts
+export const decks = pgTable('decks', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
+  coverImage: text('cover_image'), // NEW FIELD
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+```
+
+**For Development:**
+```bash
+npm run db:push
+```
+
+**For Production:**
+```bash
+npm run db:generate  # Creates migration
+npm run db:migrate   # Applies to database
+git add drizzle/     # Commit migration files
+git commit -m "Add cover_image to decks table"
+```
+
+#### Scenario 2: Creating New Tables
+
+After adding new table definitions to `schema.ts`:
+
+```bash
+# Development
+npm run db:push
+
+# Production
+npm run db:generate
+npm run db:migrate
+```
+
+#### Scenario 3: Modifying Existing Tables
+
+When changing column types, constraints, or relationships:
+
+```bash
+# Always review changes carefully!
+npm run db:generate  # Review the SQL
+npm run db:migrate   # Apply after review
+```
+
+---
+
+### Verifying Your Changes
+
+After updating your database, verify with Drizzle Studio:
+
+```bash
+npm run db:studio
+```
+
+This opens `https://local.drizzle.studio` where you can:
+- ✅ See all tables and columns
+- ✅ Browse existing data
+- ✅ Verify schema changes applied correctly
+- ✅ Test queries interactively
 
 ## Drizzle Studio
 

@@ -11,37 +11,53 @@ Environment variables are used to store configuration that changes between envir
 Create a `.env.local` file in the root of your project with the following variables:
 
 ```bash
+# Clerk Authentication
+# Get these from your Clerk Dashboard: https://dashboard.clerk.com/last-active?path=api-keys
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_your_publishable_key_here"
+CLERK_SECRET_KEY="sk_test_your_secret_key_here"
+
 # Database Configuration
 # Get this from your Neon dashboard: https://neon.tech
 DATABASE_URL="postgresql://username:password@hostname:5432/database?sslmode=require"
-
-# NextAuth Configuration
-# Generate a secret with: openssl rand -base64 32
-NEXTAUTH_SECRET="your-secret-key-here"
-
-# The URL of your application
-# Development: http://localhost:3000
-# Production: https://yourdomain.com
-NEXTAUTH_URL="http://localhost:3000"
-
-# OAuth Providers (Optional)
-# Get these from respective provider dashboards
-
-# Google OAuth
-# https://console.cloud.google.com/apis/credentials
-GOOGLE_CLIENT_ID=""
-GOOGLE_CLIENT_SECRET=""
-
-# GitHub OAuth
-# https://github.com/settings/developers
-GITHUB_ID=""
-GITHUB_SECRET=""
 
 # Other Configuration
 NODE_ENV="development"
 ```
 
 ## Required Variables
+
+### NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+Your Clerk publishable key. This is safe to expose to the browser and is required for client-side Clerk components.
+
+**Format:**
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
+```
+
+**Where to get it:**
+1. Go to [Clerk Dashboard](https://dashboard.clerk.com)
+2. Select your application (or create a new one)
+3. Go to "API Keys" in the sidebar
+4. Copy the "Publishable key"
+
+**Note:** The `NEXT_PUBLIC_` prefix makes this variable available to the browser. Clerk publishable keys are designed to be public.
+
+### CLERK_SECRET_KEY
+
+Your Clerk secret key. This is server-only and must never be exposed to the browser.
+
+**Format:**
+```
+CLERK_SECRET_KEY="sk_test_..."
+```
+
+**Where to get it:**
+1. In the same Clerk Dashboard "API Keys" page
+2. Copy the "Secret key"
+3. **NEVER commit this to version control!**
+
+**Important:** This key has full access to your Clerk instance. Keep it secure!
 
 ### DATABASE_URL
 
@@ -64,70 +80,24 @@ DATABASE_URL="postgresql://myuser:mypassword@ep-example-123456.us-east-2.aws.neo
 4. Click "Connection Details"
 5. Copy the connection string
 
-### NEXTAUTH_SECRET
-
-A random string used to encrypt session tokens.
-
-**Generate:**
-```bash
-# macOS/Linux
-openssl rand -base64 32
-
-# Windows PowerShell
-[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Minimum 0 -Maximum 256 }))
-```
-
-**Example:**
-```
-NEXTAUTH_SECRET="Xm2k9pLqR3vBnN8yT5wZ7aF1dS4gH6j0"
-```
-
-### NEXTAUTH_URL
-
-The URL where your application is running.
-
-**Development:**
-```
-NEXTAUTH_URL="http://localhost:3000"
-```
-
-**Production:**
-```
-NEXTAUTH_URL="https://yourdomain.com"
-```
-
 ## Optional Variables
 
-### Google OAuth
+Clerk handles OAuth providers through its dashboard, so no additional environment variables are needed for social sign-in. To enable OAuth providers:
 
-To enable Google sign-in:
+1. Go to your [Clerk Dashboard](https://dashboard.clerk.com)
+2. Navigate to "Social Login" or "Authentication Providers"
+3. Enable the providers you want (Google, GitHub, Microsoft, etc.)
+4. Follow Clerk's setup instructions for each provider
+5. Clerk manages the OAuth credentials automatically
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project
-3. Enable Google+ API
-4. Create OAuth 2.0 credentials
-5. Add authorized redirect URI: `http://localhost:3000/api/auth/callback/google`
-6. Copy Client ID and Client Secret
-
-```bash
-GOOGLE_CLIENT_ID="123456789-abc123.apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET="GOCSPX-abc123def456"
-```
-
-### GitHub OAuth
-
-To enable GitHub sign-in:
-
-1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
-2. Click "New OAuth App"
-3. Set Homepage URL: `http://localhost:3000`
-4. Set Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
-5. Copy Client ID and generate Client Secret
-
-```bash
-GITHUB_ID="abc123def456"
-GITHUB_SECRET="abc123def456ghi789jkl012"
-```
+**Popular OAuth Providers Supported by Clerk:**
+- Google
+- GitHub
+- Microsoft
+- Facebook
+- Twitter/X
+- Discord
+- And many more!
 
 ## Environment Files
 
@@ -159,9 +129,10 @@ const dbUrl = "postgresql://user:password@host/db";
 ```
 
 ```typescript
-// Don't expose secrets to client
+// Don't expose server secrets to client
 export const config = {
-  dbUrl: process.env.DATABASE_URL // Exposed to browser!
+  dbUrl: process.env.DATABASE_URL, // Exposed to browser!
+  clerkSecret: process.env.CLERK_SECRET_KEY // Exposed to browser!
 };
 ```
 
@@ -205,7 +176,10 @@ Only variables prefixed with `NEXT_PUBLIC_` are available:
 
 export function ClientComponent() {
   // ❌ This is undefined on client
-  const secret = process.env.NEXTAUTH_SECRET;
+  const secret = process.env.CLERK_SECRET_KEY;
+  
+  // ✅ This works - Clerk publishable key has NEXT_PUBLIC_ prefix
+  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
   
   // ✅ This works (if you add it)
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -216,6 +190,7 @@ export function ClientComponent() {
 ```bash
 NEXT_PUBLIC_API_URL="http://localhost:3000"
 NEXT_PUBLIC_APP_NAME="GDG FlashCard"
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..." # Already required
 ```
 
 ## Verifying Environment Variables
@@ -224,9 +199,9 @@ Create `src/lib/env.ts` to validate required variables:
 
 ```typescript
 const requiredEnvVars = [
+  'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
+  'CLERK_SECRET_KEY',
   'DATABASE_URL',
-  'NEXTAUTH_SECRET',
-  'NEXTAUTH_URL',
 ] as const;
 
 for (const envVar of requiredEnvVars) {
@@ -236,14 +211,9 @@ for (const envVar of requiredEnvVars) {
 }
 
 export const env = {
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
+  CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY!,
   DATABASE_URL: process.env.DATABASE_URL!,
-  NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET!,
-  NEXTAUTH_URL: process.env.NEXTAUTH_URL!,
-  // Optional vars
-  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-  GITHUB_ID: process.env.GITHUB_ID,
-  GITHUB_SECRET: process.env.GITHUB_SECRET,
 };
 ```
 

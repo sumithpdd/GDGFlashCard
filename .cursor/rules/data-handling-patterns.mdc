@@ -1,0 +1,31 @@
+---
+alwaysApply: true
+---
+// All data retrieval from the database must be performed in React Server Components or server-side functions.
+// Any creation, update, or deletion (insert/update/delete) of data in the database must always be implemented in server actions, never on the client or in client components.
+
+// Data validation rules:
+// - All data passed to server actions must be validated using a Zod schema.
+// - Define a Zod schema for every incoming payload for create, update, or delete operations.
+// - Derive a TypeScript type from each Zod schema for type safety in your action signatures.
+// - Do NOT use `FormData` as your server action input type; explicitly type inputs with the derived Zod types.
+// - Example pattern:
+//
+//   import { z } from "zod"
+//
+//   export const createDeckSchema = z.object({
+//     title: z.string().min(1),
+//     description: z.string().optional()
+//   });
+//   export type CreateDeckInput = z.infer<typeof createDeckSchema>;
+//
+//   export async function createDeck(input: CreateDeckInput) {
+//     const parsed = createDeckSchema.safeParse(input);
+//     if (!parsed.success) {
+//       // handle validation error
+//       throw new Error("Invalid input");
+//     }
+//     // ... database logic
+//   }
+//
+// Always apply these patterns for _any_ database write or update operation. Never accept or trust unvalidated input.

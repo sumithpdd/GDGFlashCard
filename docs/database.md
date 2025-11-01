@@ -23,6 +23,47 @@ Neon is a serverless PostgreSQL platform that offers:
 - **Branching**: Create database branches like Git
 - **Built-in Connection Pooling**: Efficient connection management
 
+## Database Management Commands
+
+### Updating Your Database Schema
+
+After modifying your schema in `src/db/schema.ts`, you need to sync those changes to your Neon database:
+
+#### Quick Update (Development)
+```bash
+npm run db:push
+```
+- **Use for:** Local development, quick iterations
+- **Effect:** Directly syncs schema without creating migration files
+- **Fast** and convenient for prototyping
+
+#### Production Workflow
+```bash
+# 1. Generate migration files
+npm run db:generate
+
+# 2. Review the generated SQL in drizzle/ folder
+
+# 3. Apply migrations to database  
+npm run db:migrate
+```
+- **Use for:** Production deployments, team projects
+- **Effect:** Creates versioned migration files for tracking changes
+- **Safe** and reversible with version control
+
+#### Viewing Your Database
+```bash
+npm run db:studio
+```
+Opens Drizzle Studio at `https://local.drizzle.studio` to:
+- Browse tables and data visually
+- Run queries interactively
+- Verify schema changes
+
+> 💡 **See [drizzle-setup.md](./drizzle-setup.md) for detailed migration workflows and examples.**
+
+---
+
 ## Schema Design
 
 ### Users Table

@@ -1,0 +1,23 @@
+---
+alwaysApply: true
+---
+// All authentication and authorization logic must ensure users can only access, update, or delete their own data.
+// Never expose data belonging to other users.
+//
+// - Always check the authenticated user's identity (userId from Clerk) before allowing read, update, or delete operations.
+// - All queries MUST filter by the current user's userId (as present in `decks.userId` in the Drizzle schema).
+// - Never return, modify, or delete records for decks or cards unless the deck's `userId` matches the authenticated user's `userId`.
+// - Never trust user input for userId; always use the authenticated userId from Clerk.
+//
+// Example pattern:
+//   import { db } from "@/db"
+//   import { decks } from "@/db/schema"
+//   // Assume `auth` provides the current authenticated user's Clerk userId
+//   const userId = auth().userId
+//   const myDecks = await db.select().from(decks).where(eq(decks.userId, userId));
+//
+// - For card operations, ensure the parent deck belongs to the authenticated user, or join via deck's userId.
+//
+// If unauthorized access is attempted (e.g., mismatched userId), always return an appropriate error/status (e.g., 403 Forbidden).
+//
+// Never expose user data (including deck/card lists) without strict userId checks.

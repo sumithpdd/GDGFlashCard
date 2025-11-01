@@ -50,33 +50,30 @@ This will install:
 
 ### 3. Set Up Environment Variables
 
-Create a `.env.local` file in the root directory:
+Create a `.env.local` file in the root directory with the following content:
 
 ```bash
-# Copy the example file
-cp .env.example .env.local
-```
+# Clerk Authentication
+# Get these from: https://dashboard.clerk.com/last-active?path=api-keys
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your_publishable_key_here"
+CLERK_SECRET_KEY="your_secret_key_here"
 
-Edit `.env.local` with your actual values:
-
-```bash
 # Database Connection (we'll set this up later)
 DATABASE_URL="postgresql://user:password@host:5432/database"
-
-# NextAuth Configuration (we'll set this up later)
-NEXTAUTH_SECRET="generate-a-random-secret-here"
-NEXTAUTH_URL="http://localhost:3000"
 ```
 
-**Generate a secure secret:**
+**How to get your Clerk keys:**
 
-```bash
-# On macOS/Linux
-openssl rand -base64 32
+1. Go to [Clerk Dashboard](https://dashboard.clerk.com)
+2. Create a new application (or select existing)
+3. Navigate to "API Keys"
+4. Copy both the "Publishable key" and "Secret key"
+5. Paste them into your `.env.local` file
 
-# On Windows (PowerShell)
-[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Minimum 0 -Maximum 256 }))
-```
+**Important:**
+- Keep the `NEXT_PUBLIC_` prefix for the publishable key
+- Never commit `.env.local` to version control
+- The publishable key is safe for the browser, the secret key is not
 
 ### 4. Run the Development Server
 
@@ -144,13 +141,15 @@ Follow the [Database Setup Guide](./database-setup.md) to:
 - Create database schema
 - Run migrations
 
-### 2. Implement Authentication
+### 2. Customize Authentication (Optional)
 
-Follow the [Authentication Guide](./authentication.md) to:
-- Install NextAuth.js
-- Create authentication pages
-- Protect routes
-- Add user signup/login
+Authentication is already set up with Clerk! But you can customize:
+- [Authentication Guide](./authentication.md) to learn more about:
+  - Customizing Clerk themes
+  - Creating custom sign-in/sign-up pages
+  - Protecting specific routes
+  - Working with user data
+  - Adding OAuth providers
 
 ### 3. Build Features
 

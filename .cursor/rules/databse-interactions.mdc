@@ -1,0 +1,32 @@
+---
+alwaysApply: true
+---
+// All database interactions must use the Drizzle ORM schema
+// and perform queries through the exported Drizzle instance (`db`).
+// Use only models defined in `src/db/schema.ts`.
+// Example access: `db.select().from(decks)`
+//
+// Do NOT use raw SQL, other ORMs, or direct clients (e.g., `pg`)
+// for querying or schema management.
+ 
+// Always:
+// - Use TypeScript types provided by Drizzle
+// - Prefer async/await for all queries
+// - Catch and handle errors appropriately
+// - Avoid hard-coding table or column names; use imports from the schema
+//
+// Example fetch all decks for user:
+//   import { db } from "@/db"
+//   import { decks } from "@/db/schema"
+//   const userDecks = await db.select().from(decks).where(eq(decks.userId, userId));
+//
+// Example insert a card:
+//   import { db } from "@/db"
+//   import { cards } from "@/db/schema"
+//   await db.insert(cards).values({
+//     deckId, front: "front text", back: "back text"
+//   })
+//
+// Sync all schema changes using Drizzle migration commands; do NOT hand-write migration SQL.
+//
+// No direct SQL. No bypassing Drizzle ORM. No alternatives allowed.
